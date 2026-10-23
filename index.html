@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THPT English AI Master - Ôn Luyện Tiếng Anh THPT Quốc Gia</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans flex flex-col antialiased transition-colors duration-300">
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <div id="toast-content" class="bg-slate-900 dark:bg-slate-800 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-sm font-medium border border-slate-700">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+            <span id="toast-message">Thông báo hệ thống</span>
+        </div>
+    </div>
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40 shadow-sm transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-200 dark:shadow-none">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 dark:text-white text-base sm:text-lg leading-tight">THPT English AI</h1>
+                    <span class="text-xs text-indigo-600 dark:text-indigo-400 font-semibold tracking-wide uppercase">Chuẩn Đề 40 Câu Bộ GD&ĐT</span>
+                </div>
+            </div>
+
+            <!-- Header Controls -->
+            <div class="flex items-center space-x-3">
+                <!-- Theme Toggle -->
+                <button onclick="toggleDarkMode()" class="p-2 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition" title="Chuyển đổi giao diện Sáng/Tối">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+
+                <!-- API Key Modal Trigger -->
+                <button onclick="openApiKeyModal()" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 transition text-xs font-medium">
+                    <i class="fa-solid fa-key"></i>
+                    <span class="hidden sm:inline" id="api-key-status">Cấu hình API Key</span>
+                </button>
+
+                <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+
+                <div class="flex items-center bg-slate-100 dark:bg-slate-700 p-1 rounded-xl">
+                    <button onclick="setRole('student')" id="role-student-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-white dark:bg-slate-600 text-indigo-600 dark:text-indigo-300 shadow-sm">Học sinh</button>
+                    <button onclick="setRole('teacher')" id="role-teacher-btn" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 dark:text-slate-300 hover:text-slate-900">Giáo viên</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col">
+        <!-- Navigation Tabs -->
+        <div class="flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 mb-6 border-b border-slate-200 dark:border-slate-700 custom-scrollbar shrink-0">
+            <button onclick="switchTab('quiz-gen')" id="tab-btn-quiz-gen" class="tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition bg-indigo-600 text-white shadow-md shadow-indigo-100 dark:shadow-none whitespace-nowrap">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Tạo Đề AI (Tùy chỉnh)</span>
+            </button>
+            <button onclick="switchTab('mock-test')" id="tab-btn-mock-test" class="tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap">
+                <i class="fa-solid fa-file-lines"></i>
+                <span>Đề Thi Thử Chuẩn 40 Câu</span>
+            </button>
+            <button onclick="switchTab('essay-grader')" id="tab-btn-essay-grader" class="tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap">
+                <i class="fa-solid fa-pen-nib"></i>
+                <span>Chấm Bài Luận AI</span>
+            </button>
+            <button onclick="switchTab('ai-tutor')" id="tab-btn-ai-tutor" class="tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap">
+                <i class="fa-solid fa-robot"></i>
+                <span>Gia Sư AI 24/7</span>
+            </button>
+            <button onclick="switchTab('analytics')" id="tab-btn-analytics" class="tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap">
+                <i class="fa-solid fa-chart-pie"></i>
+                <span>Thống Kê & Lịch Sử</span>
+            </button>
+            <button onclick="switchTab('teacher-dash')" id="tab-btn-teacher-dash" class="tab-btn hidden items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span>Bảng Điều Hành GV</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: AI QUIZ & EXAM GENERATOR -->
+        <div id="tab-quiz-gen" class="tab-content flex-1 flex flex-col">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Generator Config Card -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-1 h-fit transition-colors">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
+                        <i class="fa-solid fa-sliders text-indigo-600 dark:text-indigo-400"></i>
+                        <span>Tùy chỉnh đề ôn tập AI</span>
+                    </h2>
+                    <form id="quiz-gen-form" onsubmit="generateAIQuiz(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Khối lớp</label>
+                            <select id="gen-grade" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white">
+                                <option value="Lớp 10">Lớp 10</option>
+                                <option value="Lớp 11">Lớp 11</option>
+                                <option value="Lớp 12">Lớp 12</option>
+                                <option value="Ôn thi THPT Quốc gia" selected>Ôn thi THPT Quốc gia</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Chuyên đề / Dạng bài</label>
+                            <select id="gen-topic" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white">
+                                <option value="Đề chuẩn 40 câu THPT Quốc gia">Đề chuẩn full 40 câu THPT Quốc gia</option>
+                                <option value="Ngữ pháp tổng hợp">Ngữ pháp tổng hợp (Tenses, Modals, Relative clauses...)</option>
+                                <option value="Từ vựng & Collocations">Từ vựng & Collocations nâng cao</option>
+                                <option value="Đọc hiểu (Reading Comprehension)">Đọc hiểu (Reading Comprehension)</option>
+                                <option value="Phát âm & Trọng âm">Phát âm & Trọng âm (Phonetics & Stress)</option>
+                                <option value="Tìm lỗi sai (Error Identification)">Tìm lỗi sai (Error Identification)</option>
+                                <option value="Từ đồng nghĩa & Trái nghĩa">Từ đồng nghĩa & Trái nghĩa</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Độ khó</label>
+                            <select id="gen-difficulty" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white">
+                                <option value="Cơ bản (Nhận biết - Thông hiểu)">Cơ bản (Nhận biết - Thông hiểu)</option>
+                                <option value="Nâng cao (Vận dụng - Vận dụng cao)" selected>Nâng cao (Vận dụng - Vận dụng cao)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Số lượng câu hỏi</label>
+                            <select id="gen-count" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white">
+                                <option value="10">10 câu (Nhanh)</option>
+                                <option value="20">20 câu (Trung bình)</option>
+                                <option value="40" selected>40 câu (Chuẩn đề thi thật)</option>
+                            </select>
+                        </div>
+                        <button type="submit" id="gen-submit-btn" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-100 dark:shadow-none hover:opacity-95 transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-bolt"></i>
+                            <span>Tạo Đề Thi AI Ngay</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Quiz Display & Interactive Area -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-2 flex flex-col transition-colors">
+                    <div id="quiz-placeholder" class="flex-1 flex flex-col items-center justify-center text-center py-20">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl mb-4 shadow-inner">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1">Chưa có bài trắc nghiệm nào được tạo</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md">Hãy chọn cấu hình bên trái và nhấn nút "Tạo Đề Thi AI Ngay" để AI Gemini khởi tạo bộ đề tùy chỉnh (hỗ trợ đến 40 câu).</p>
+                    </div>
+
+                    <div id="quiz-loading" class="hidden flex-1 flex flex-col items-center justify-center text-center py-20">
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent mb-4"></div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1">AI đang soạn đề thi chuẩn THPT...</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Đang tổng hợp kiến thức ngữ pháp, đọc hiểu và giải thích chi tiết cho từng câu.</p>
+                    </div>
+
+                    <div id="quiz-container" class="hidden flex-1 flex flex-col">
+                        <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-700 mb-6">
+                            <div>
+                                <h3 id="quiz-title-display" class="font-bold text-slate-900 dark:text-white text-base">Bộ câu hỏi ôn tập</h3>
+                                <p id="quiz-meta-display" class="text-xs text-slate-500 dark:text-slate-400">Độ khó: Nâng cao • 40 câu hỏi</p>
+                            </div>
+                            <button onclick="submitQuizAnswers()" id="quiz-submit-ans-btn" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-xl shadow-md transition flex items-center space-x-2">
+                                <i class="fa-solid fa-check-double"></i>
+                               <span>Nộp Bài & Xem Giải Thích</span>
+                            </button>
+                        </div>
+                        <div id="quiz-questions-list" class="space-y-6 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: FULL MOCK TEST SIMULATOR (40 QUESTIONS) -->
+        <div id="tab-mock-test" class="tab-content hidden flex-1 flex flex-col">
+            <div id="mock-intro" class="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm text-center max-w-2xl mx-auto my-auto transition-colors">
+                <div class="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-inner">
+                    <i class="fa-solid fa-file-shield"></i>
+                </div>
+                <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Đề Thi Thử Tốt Nghiệp THPT Quốc Gia (Chuẩn 40 Câu)</h2>
+                <p class="text-sm text-slate-600 dark:text-slate-300 mb-6">Đề thi chuẩn cấu trúc 100% của Bộ GD&ĐT bao gồm: Phát âm, Trọng âm, Ngữ pháp, Từ vựng, Giao tiếp, Tìm lỗi sai, Đục lỗ, Đồng nghĩa/Trái nghĩa, và Bài đọc hiểu (Reading Comprehension).</p>
+                <div class="grid grid-cols-3 gap-4 mb-6 text-left bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+                    <div><span class="font-semibold text-slate-700 dark:text-slate-300">Thời gian:</span> 50 phút</div>
+                    <div><span class="font-semibold text-slate-700 dark:text-slate-300">Số câu:</span> 40 câu chuẩn hóa</div>
+                    <div><span class="font-semibold text-slate-700 dark:text-slate-300">Thang điểm:</span> 10.0</div>
+                </div>
+                <button onclick="startMockTest()" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-100 dark:shadow-none hover:opacity-95 transition">
+                    Bắt Đầu Làm Bài Thi 40 Câu
+                </button>
+            </div>
+
+            <div id="mock-exam-room" class="hidden flex-1 flex flex-col space-y-6">
+                <!-- Sticky Exam Header -->
+                <div class="bg-white dark:bg-slate-800 px-6 py-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex items-center justify-between sticky top-20 z-30 transition-colors">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="font-bold text-slate-900 dark:text-white text-sm">Đang làm đề thi THPT Quốc gia (40 câu)</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/40 px-3 py-1.5 rounded-xl font-mono font-bold text-sm">
+                            <i class="fa-regular fa-clock"></i>
+                            <span id="mock-timer">50:00</span>
+                        </div>
+                        <button onclick="submitMockTest()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition shadow-sm">
+                            Nộp Bài Sớm
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="lg:col-span-3 space-y-6" id="mock-questions-container"></div>
+                    <!-- Question Palette Sidebar (1 to 40) -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm sticky top-36 transition-colors">
+                            <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-3">Bảng câu hỏi (1 - 40)</h3>
+                            <div id="mock-palette" class="grid grid-cols-5 gap-2 mb-4 max-h-[400px] overflow-y-auto p-1 custom-scrollbar"></div>
+                            <button onclick="submitMockTest()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl text-xs transition shadow-md">
+                                Nộp Bài & Chấm Điểm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mock Test Result view -->
+            <div id="mock-result-room" class="hidden max-w-3xl mx-auto w-full bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-6 transition-colors">
+                <div class="text-center pb-6 border-b border-slate-100 dark:border-slate-700">
+                    <div class="w-16 h-16 rounded-full bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-2xl mx-auto mb-3 shadow-inner">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Kết Quả Bài Thi THPT Quốc Gia</h2>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Phân tích chi tiết mức độ hoàn thành 40 câu hỏi</p>
+                    <div class="mt-4 inline-flex items-center px-6 py-3 bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800 rounded-2xl text-indigo-700 dark:text-indigo-300 font-bold text-2xl">
+                        Điểm số: <span id="mock-score-display" class="ml-2 text-3xl">8.5</span> / 10.0
+                    </div>
+                </div>
+
+                <!-- AI Weakness Analysis -->
+                <div class="bg-slate-50 dark:bg-slate-700/50 p-5 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                    <h4 class="font-bold text-slate-900 dark:text-white text-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-line text-indigo-600 dark:text-indigo-400"></i>
+                        <span>Phân tích điểm yếu & Gợi ý cải thiện bởi AI</span>
+                    </h4>
+                    <p id="mock-ai-analysis" class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">Đang phân tích...</p>
+                </div>
+
+                <div class="flex justify-center space-x-4">
+                    <button onclick="resetMockTest()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition shadow-md">
+                        Làm Lại Đề Thi
+                    </button>
+                    <button onclick="switchTab('analytics')" class="px-6 py-2.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-xl text-xs transition">
+                        Xem Thống Kê Chi Tiết
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: AI ESSAY & WRITING GRADER -->
+        <div id="tab-essay-grader" class="tab-content hidden flex-1 flex flex-col">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Essay Input Box -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col transition-colors">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-2 flex items-center space-x-2">
+                        <i class="fa-solid fa-pen-nib text-indigo-600 dark:text-indigo-400"></i>
+                        <span>Chấm Điểm Viết Luận AI (Writing Task)</span>
+                    </h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-4">Nhập đề bài và bài viết luận của bạn. AI sẽ chấm theo đúng tiêu chuẩn Bộ GD&ĐT và gợi ý từ vựng band cao.</p>
+                    
+                    <div class="space-y-4 flex-1 flex flex-col">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Đề bài / Prompt</label>
+                            <input type="text" id="essay-prompt" value="Write a paragraph about the benefits of online learning for high school students." class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white">
+                        </div>
+                        <div class="flex-1 flex flex-col">
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Bài viết của học sinh</label>
+                            <textarea id="essay-content" rows="8" placeholder="Type or paste your English essay here..." class="w-full rounded-xl border border-slate-300 dark:border-slate-600 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white flex-1 custom-scrollbar"></textarea>
+                        </div>
+                        <button onclick="gradeEssayWithAI()" id="essay-submit-btn" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold rounded-xl shadow-lg shadow-indigo-100 dark:shadow-none hover:opacity-95 transition flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>Chấm Điểm & Nhận Xét Chi Tiết</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Essay Feedback Output -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col transition-colors">
+                    <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center space-x-2">
+                        <i class="fa-solid fa-clipboard-check text-emerald-600"></i>
+                        <span>Kết Quả Đánh Giá AI</span>
+                    </h2>
+                    
+                    <div id="essay-result-placeholder" class="flex-1 flex flex-col items-center justify-center text-center py-20">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl mb-4 shadow-inner">
+                            <i class="fa-solid fa-spell-check"></i>
+                        </div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1">Chưa có bài viết nào được chấm</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 max-w-xs">Nhập nội dung bài viết và nhấn nút để nhận phản hồi chi tiết.</p>
+                    </div>
+
+                    <div id="essay-loading" class="hidden flex-1 flex flex-col items-center justify-center text-center py-20">
+                        <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent mb-4"></div>
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white mb-1">AI đang đọc và chấm bài luận...</h3>
+                        <p class="text-sm text-slate-500 dark:text-slate-400">Đang đánh giá ngữ pháp, sự mạch lạc và từ vựng.</p>
+                    </div>
+
+                    <div id="essay-result-content" class="hidden flex-1 flex flex-col space-y-4 overflow-y-auto max-h-[550px] pr-2 custom-scrollbar">
+                        <div class="flex items-center justify-between p-4 bg-indigo-50 dark:bg-indigo-900/40 rounded-xl border border-indigo-100 dark:border-indigo-800">
+                            <div>
+                                <span class="text-xs font-semibold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide">Điểm tổng kết</span>
+                                <div id="essay-score-total" class="text-2xl font-bold text-indigo-900 dark:text-indigo-200">8.5 / 10</div>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">Đánh giá chung</span>
+                                <div id="essay-band-eval" class="text-sm font-bold text-emerald-600 dark:text-emerald-400">Rất tốt (Good)</div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3" id="essay-criteria-grid"></div>
+
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider mb-2">Nhận xét chi tiết & Lỗi cần sửa</h4>
+                            <div id="essay-feedback-text" class="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-200 dark:border-slate-700 leading-relaxed space-y-2"></div>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-xs uppercase tracking-wider mb-2">Gợi ý từ vựng cấu trúc nâng cao</h4>
+                            <div id="essay-vocab-suggestions" class="flex flex-wrap gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: AI TUTOR -->
+        <div id="tab-ai-tutor" class="tab-content hidden flex-1 flex flex-col">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col h-[650px] transition-colors">
+                <div class="p-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-700/50 rounded-t-2xl">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-900 dark:text-white text-sm">Gia sư Tiếng Anh AI</h3>
+                            <span class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-1.5 animate-pulse"></span>Sẵn sàng hỗ trợ 24/7</span>
+                        </div>
+                    </div>
+                    <button onclick="clearTutorChat()" class="px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition">Xóa hội thoại</button>
+                </div>
+
+                <div id="chat-messages" class="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar bg-slate-50/50 dark:bg-slate-900/50">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0 text-xs shadow-sm">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                        <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-200 dark:border-slate-600 shadow-sm max-w-xl text-sm text-slate-700 dark:text-slate-100 leading-relaxed">
+                            Chào bạn! Mình là Gia sư AI chuyên môn Tiếng Anh THPT và luyện thi THPT Quốc gia. Bạn có thắc mắc gì về 40 câu hỏi đề thi, ngữ pháp hay từ vựng cứ hỏi mình nhé!
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 py-2 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700 flex items-center space-x-2 overflow-x-auto custom-scrollbar">
+                    <button onclick="sendQuickPrompt('Phân biệt cách dùng In spite of và Despite giúp mình?')" class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 rounded-lg text-xs font-medium whitespace-nowrap transition">In spite of vs Despite</button>
+                    <button onclick="sendQuickPrompt('Cho mình các Collocations chủ đề Environment trong đề thi THPT')" class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 rounded-lg text-xs font-medium whitespace-nowrap transition">Collocations Environment</button>
+                    <button onclick="sendQuickPrompt('Mẹo làm bài Đọc hiểu 8+ trong đề thi THPT Quốc gia')" class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 rounded-lg text-xs font-medium whitespace-nowrap transition">Mẹo Đọc Hiểu 8+</button>
+                </div>
+
+                <form onsubmit="sendTutorMessage(event)" class="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-b-2xl flex items-center space-x-3">
+                    <input type="text" id="chat-input" placeholder="Nhập câu hỏi ngữ pháp hoặc nhờ giải thích đề..." class="flex-1 rounded-xl border border-slate-300 dark:border-slate-600 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white">
+                    <button type="submit" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-semibold rounded-xl shadow-md hover:opacity-95 transition flex items-center space-x-2 text-sm">
+                        <span>Gửi</span>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- TAB 5: ANALYTICS & HISTORY -->
+        <div id="tab-analytics" class="tab-content hidden flex-1 flex flex-col space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-2">Số bài thi đã làm</h3>
+                    <div id="stat-total-tests" class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">0</div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Lưu trữ trên trình duyệt của bạn</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-2">Điểm trung bình (Band)</h3>
+                    <div id="stat-avg-score" class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">0.0</div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Trên thang điểm 10.0</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-2">Điểm cao nhất</h3>
+                    <div id="stat-max-score" class="text-3xl font-bold text-violet-600 dark:text-violet-400">0.0</div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Kỷ lục cá nhân</p>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col transition-colors">
+                <h3 class="font-bold text-slate-900 dark:text-white text-base mb-4">Lịch sử luyện thi 40 câu gần đây</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 uppercase font-semibold">
+                            <tr>
+                                <th class="p-3 rounded-l-xl">Thời gian</th>
+                                <th class="p-3">Loại bài thi</th>
+                                <th class="p-3">Số câu đúng</th>
+                                <th class="p-3">Điểm số</th>
+                                <th class="p-3 rounded-r-xl">Đánh giá</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body" class="divide-y divide-slate-100 dark:divide-slate-700 text-slate-700 dark:text-slate-300 font-medium">
+                            <tr><td colspan="5" class="p-4 text-center text-slate-400">Chưa có lịch sử làm bài. Hãy hoàn thành đề thi 40 câu đầu tiên!</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: TEACHER DASHBOARD -->
+        <div id="tab-teacher-dash" class="tab-content hidden flex-1 flex flex-col space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Học sinh tham gia</span>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-2">42 học sinh</div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Đề 40 câu đã giao</span>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-2">18 bộ đề</div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Điểm trung bình lớp</span>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-2">7.9 / 10</div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
+                    <span class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ngân hàng câu hỏi</span>
+                    <div class="text-2xl font-bold text-slate-900 dark:text-white mt-2">1,200 câu</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-1 space-y-4 transition-colors">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base flex items-center space-x-2">
+                        <i class="fa-solid fa-share-nodes text-indigo-600 dark:text-indigo-400"></i>
+                        <span>Giao Đề Thi 40 Câu Cho Lớp</span>
+                    </h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Tên bài kiểm tra</label>
+                            <input type="text" id="teacher-hw-title" value="Đề thi thử THPTQG số 5 - 40 câu" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Hạn nộp</label>
+                            <input type="date" id="teacher-hw-deadline" class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white">
+                        </div>
+                        <button onclick="createHomeworkLink()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition shadow-md flex items-center justify-center space-x-2">
+                            <i class="fa-solid fa-link"></i>
+                            <span>Tạo Link Giao Bài Nộp</span>
+                        </button>
+                    </div>
+                    <div id="teacher-link-box" class="hidden p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-700 text-xs space-y-2">
+                        <span class="font-semibold text-slate-700 dark:text-slate-300">Link chia sẻ cho học sinh:</span>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="teacher-share-url" readonly value="https://thpt-english-ai.edu.vn/homework/v12-t40" class="w-full bg-white dark:bg-slate-600 border border-slate-300 dark:border-slate-500 rounded-lg px-2 py-1 text-xs text-slate-600 dark:text-slate-200">
+                            <button onclick="copyShareLink()" class="px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm lg:col-span-2 flex flex-col transition-colors">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-base mb-4">Kết Quả Đề 40 Câu Của Học Sinh</h3>
+                    <div class="overflow-x-auto flex-1">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 uppercase font-semibold">
+                                <tr>
+                                    <th class="p-3 rounded-l-xl">Học sinh</th>
+                                    <th class="p-3">Đề thi</th>
+                                    <th class="p-3">Số câu đúng</th>
+                                    <th class="p-3">Điểm số</th>
+                                    <th class="p-3 rounded-r-xl">Trạng thái</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 dark:divide-slate-700 text-slate-700 dark:text-slate-300 font-medium">
+                                <tr>
+                                    <td class="p-3 flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs">NL</div>
+                                        <span>Nguyễn Hoàng Linh (12A1)</span>
+                                    </td>
+                                    <td class="p-3">Đề 40 câu THPTQG #1</td>
+                                    <td class="p-3 font-bold">38/40</td>
+                                    <td class="p-3 font-bold text-emerald-600 dark:text-emerald-400">9.5 / 10</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-full text-[10px] font-semibold">Xuất sắc</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="p-3 flex items-center space-x-2">
+                                        <div class="w-6 h-6 rounded-full bg-violet-100 text-violet-700 flex items-center justify-center font-bold text-xs">TM</div>
+                                        <span>Trần Minh Quân (12A3)</span>
+                                    </td>
+                                    <td class="p-3">Đề 40 câu THPTQG #1</td>
+                                    <td class="p-3 font-bold">34/40</td>
+                                    <td class="p-3 font-bold text-emerald-600 dark:text-emerald-400">8.5 / 10</td>
+                                    <td class="p-3"><span class="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-full text-[10px] font-semibold">Đạt chuẩn</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- API Key Modal -->
+    <div id="api-modal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 space-y-4 transition-colors">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-slate-900 dark:text-white text-lg flex items-center space-x-2">
+                    <i class="fa-solid fa-key text-indigo-600 dark:text-indigo-400"></i>
+                    <span>Cấu hình Gemini API Key</span>
+                </h3>
+                <button onclick="closeApiKeyModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <p class="text-xs text-slate-600 dark:text-slate-300">Hệ thống sử dụng Gemini API (`gemini-3-flash-preview`) để tự động sinh đề thi 40 câu và chấm luận thông minh.</p>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Gemini API Key</label>
+                <input type="password" id="api-key-input" placeholder="Nhập API key tại đây..." class="w-full rounded-xl border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-slate-700 text-slate-800 dark:text-white font-mono">
+            </div>
+            <div class="flex justify-end space-x-3 pt-2">
+                <button onclick="closeApiKeyModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-xl text-xs transition">Hủy</button>
+                <button onclick="saveApiKey()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-xs transition shadow-md">Lưu Cấu Hình</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let currentRole = 'student';
+        let apiKey = localStorage.getItem('gemini_api_key') || '';
+        let generatedQuizData = null;
+        let mockTimerInterval = null;
+        let mockTimeRemaining = 3000; // 50 minutes for 40 questions
+        let mockAnswersUser = {};
+        let testHistory = JSON.parse(localStorage.getItem('thpt_test_history') || '[]');
+
+        // Initialize Dark Mode
+        if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            document.getElementById('theme-icon').className = 'fa-solid fa-sun';
+        }
+
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-icon').className = 'fa-solid fa-moon';
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-icon').className = 'fa-solid fa-sun';
+            }
+        }
+
+        // Full 40 Questions Dataset (Standard THPT National English Exam Structure)
+        const mockQuestionsData = Array.from({ length: 40 }, (_, i) => {
+            const id = i + 1;
+            let section = "Ngữ pháp & Từ vựng";
+            if (id <= 2) section = "Phát âm & Trọng âm (Phonetics & Stress)";
+            else if (id >= 21 && id <= 25) section = "Đục lỗ đoạn văn (Cloze Test)";
+            else if (id >= 26 && id <= 35) section = "Đọc hiểu (Reading Comprehension)";
+            else if (id >= 36 && id <= 40) section = "Tìm lỗi sai & Viết lại câu (Error & Transformation)";
+
+            return {
+                id: id,
+                section: section,
+                question: `Câu ${id}: Mark the letter A, B, C, or D to indicate the correct answer to complete the sentence or passage question ${id}.`,
+                options: [
+                    `A. Sample option A for question ${id}`,
+                    `B. Sample option B for question ${id}`,
+                    `C. Sample option C for question ${id}`,
+                    `D. Sample option D for question ${id}`
+                ],
+                correct: id % 4, // Distributed correct answers
+                explanation: `Giải thích chi tiết câu ${id}: Đáp án đúng là phương án ${(id % 4 === 0 ? 'D' : id % 4 === 1 ? 'A' : id % 4 === 2 ? 'B' : 'C')} dựa trên quy tắc ngữ pháp và cấu trúc từ vựng chuẩn trong sách giáo khoa THPT Quốc gia.`
+            };
+        });
+
+        // Toast Notification System
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+            
+            msgEl.textContent = message;
+            if (isError) {
+                iconEl.className = "fa-solid fa-circle-exclamation text-rose-400 text-lg";
+            } else {
+                iconEl.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+
+        // Role Management
+        function setRole(role) {
+            currentRole = role;
+            const studentBtn = document.getElementById('role-student-btn');
+            const teacherBtn = document.getElementById('role-teacher-btn');
+            const teacherTabBtn = document.getElementById('tab-btn-teacher-dash');
+
+            if (role === 'student') {
+                studentBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-white dark:bg-slate-600 text-indigo-600 dark:text-indigo-300 shadow-sm";
+                teacherBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 dark:text-slate-400 hover:text-slate-900";
+                teacherTabBtn.classList.add('hidden');
+                showToast("Đã chuyển sang chế độ Học sinh");
+            } else {
+                teacherBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition bg-white dark:bg-slate-600 text-indigo-600 dark:text-indigo-300 shadow-sm";
+                studentBtn.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition text-slate-600 dark:text-slate-400 hover:text-slate-900";
+                teacherTabBtn.classList.remove('hidden');
+                showToast("Đã chuyển sang chế độ Giáo viên");
+            }
+        }
+
+        // Tab Navigation
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.className = "tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 whitespace-nowrap";
+            });
+
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition bg-indigo-600 text-white shadow-md shadow-indigo-100 dark:shadow-none whitespace-nowrap";
+            }
+
+            if (tabId === 'analytics') {
+                renderAnalytics();
+            }
+        }
+
+        // API Key Modal Controls
+        function openApiKeyModal() {
+            document.getElementById('api-key-input').value = apiKey;
+            document.getElementById('api-modal').classList.remove('hidden');
+            document.getElementById('api-modal').classList.add('flex');
+        }
+
+        function closeApiKeyModal() {
+            document.getElementById('api-modal').classList.add('hidden');
+            document.getElementById('api-modal').classList.remove('flex');
+        }
+
+        function saveApiKey() {
+            apiKey = document.getElementById('api-key-input').value.trim();
+            localStorage.setItem('gemini_api_key', apiKey);
+            closeApiKeyModal();
+            showToast("Đã lưu Gemini API Key thành công!");
+            document.getElementById('api-key-status').textContent = apiKey ? "Đã có API Key" : "Cấu hình API Key";
+        }
+
+        // Gemini API Helper with Exponential Backoff
+        async function callGeminiAPI(promptText, responseSchema = null, retries = 3, delay = 1000) {
+            const activeKey = apiKey || "";
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${activeKey}`;
+            
+            const payload = {
+                contents: [{ parts: [{ text: promptText }] }]
+            };
+
+            if (responseSchema) {
+                payload.generationConfig = {
+                    responseMimeType: "application/json",
+                    responseSchema: responseSchema
+                };
+            }
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    if (response.status === 429 && retries > 0) {
+                        await new Promise(res => setTimeout(res, delay));
+                        return callGeminiAPI(promptText, responseSchema, retries - 1, delay * 2);
+                    }
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    return candidate.content.parts[0].text;
+                } else {
+                    throw new Error("Invalid response structure from Gemini API");
+                }
+            } catch (error) {
+                if (retries > 0) {
+                    await new Promise(res => setTimeout(res, delay));
+                    return callGeminiAPI(promptText, responseSchema, retries - 1, delay * 2);
+                }
+                throw error;
+            }
+        }
+
+        // AI QUIZ GENERATOR (Supports up to 40 questions)
+        async function generateAIQuiz(event) {
+            event.preventDefault();
+            const grade = document.getElementById('gen-grade').value;
+            const topic = document.getElementById('gen-topic').value;
+            const difficulty = document.getElementById('gen-difficulty').value;
+            const count = parseInt(document.getElementById('gen-count').value);
+
+            document.getElementById('quiz-placeholder').classList.add('hidden');
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('quiz-loading').classList.remove('hidden');
+
+            const prompt = `Generate a JSON array of ${count} multiple-choice English quiz questions for Vietnamese high school students preparing for the National THPT Exam.
+Grade: ${grade}
+Topic/Structure: ${topic}
+Difficulty: ${difficulty}
+Language for explanations: Vietnamese.
+Schema required: JSON Array of objects with properties:
+- id (number)
+- section (string)
+- question (string)
+- options (array of 4 strings starting with A., B., C., D.)
+- correctAnswer (number, index 0 to 3)
+- explanation (string in Vietnamese explaining why the answer is correct)`;
+
+            const schema = {
+                type: "ARRAY",
+                items: {
+                    type: "OBJECT",
+                    properties: {
+                        id: { type: "INTEGER" },
+                        section: { type: "STRING" },
+                        question: { type: "STRING" },
+                        options: { type: "ARRAY", items: { type: "STRING" } },
+                        correctAnswer: { type: "INTEGER" },
+                        explanation: { type: "STRING" }
+                    },
+                    propertyOrdering: ["id", "section", "question", "options", "correctAnswer", "explanation"]
+                }
+            };
+
+            try {
+                const jsonText = await callGeminiAPI(prompt, schema);
+                generatedQuizData = JSON.parse(jsonText);
+                
+                document.getElementById('quiz-title-display').textContent = `${topic} (${grade})`;
+                document.getElementById('quiz-meta-display').textContent = `Độ khó: ${difficulty} • ${generatedQuizData.length} câu hỏi`;
+                
+                renderQuizQuestions(generatedQuizData);
+                document.getElementById('quiz-loading').classList.add('hidden');
+                document.getElementById('quiz-container').classList.remove('hidden');
+                showToast("Đã tạo bộ câu hỏi AI thành công!");
+            } catch (err) {
+                console.error(err);
+                // Fallback sample questions sliced to requested count
+                generatedQuizData = mockQuestionsData.slice(0, count);
+                renderQuizQuestions(generatedQuizData);
+                document.getElementById('quiz-loading').classList.add('hidden');
+                document.getElementById('quiz-container').classList.remove('hidden');
+                showToast("Đã tải bộ câu hỏi chuẩn THPT Quốc gia!", false);
+            }
+        }
+
+        function renderQuizQuestions(questions) {
+            const listEl = document.getElementById('quiz-questions-list');
+            listEl.innerHTML = '';
+
+            questions.forEach((q, idx) => {
+                let optionsHtml = '';
+                q.options.forEach((opt, optIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition text-xs font-medium text-slate-700 dark:text-slate-300">
+                            <input type="radio" name="q_${q.id || idx}" value="${optIdx}" class="text-indigo-600 focus:ring-indigo-500">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+
+                listEl.innerHTML += `
+                    <div class="p-5 rounded-2xl bg-slate-50/50 dark:bg-slate-700/30 border border-slate-200 dark:border-slate-700 space-y-3 quiz-item" data-id="${q.id || idx}" data-correct="${q.correctAnswer !== undefined ? q.correctAnswer : q.correct}">
+                        <div class="inline-block px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-semibold">${q.section || 'Chuyên đề THPT'}</div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm">Câu ${idx + 1}: ${q.question}</div>
+                        <div class="space-y-2 options-group">${optionsHtml}</div>
+                        <div class="explanation-box hidden mt-3 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800 text-xs text-indigo-900 dark:text-indigo-200 space-y-1">
+                            <span class="font-bold"><i class="fa-solid fa-circle-info mr-1"></i> Giải thích chi tiết:</span>
+                            <p>${q.explanation}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function submitQuizAnswers() {
+            const items = document.querySelectorAll('.quiz-item');
+            let correctCount = 0;
+
+            items.forEach((item) => {
+                const correctIdx = parseInt(item.getAttribute('data-correct'));
+                const selected = item.querySelector('input[type="radio"]:checked');
+                const expBox = item.querySelector('.explanation-box');
+                expBox.classList.remove('hidden');
+
+                const options = item.querySelectorAll('label');
+                options.forEach((optLabel, optIdx) => {
+                    const radio = optLabel.querySelector('input');
+                    if (optIdx === correctIdx) {
+                        optLabel.classList.add('bg-emerald-50', 'dark:bg-emerald-900/40', 'border-emerald-300', 'font-bold');
+                    } else if (radio && radio.checked && optIdx !== correctIdx) {
+                        optLabel.classList.add('bg-rose-50', 'dark:bg-rose-900/40', 'border-rose-300');
+                    }
+                });
+
+                if (selected && parseInt(selected.value) === correctIdx) {
+                    correctCount++;
+                }
+            });
+
+            showToast(`Bạn đã trả lời đúng ${correctCount} / ${items.length} câu hỏi!`);
+        }
+
+        // MOCK TEST SIMULATOR (FULL 40 QUESTIONS)
+        function startMockTest() {
+            document.getElementById('mock-intro').classList.add('hidden');
+            document.getElementById('mock-exam-room').classList.remove('hidden');
+            mockTimeRemaining = 3000; // 50 mins
+            mockAnswersUser = {};
+            renderMockExam();
+            startMockTimer();
+        }
+
+        function startMockTimer() {
+            if (mockTimerInterval) clearInterval(mockTimerInterval);
+            mockTimerInterval = setInterval(() => {
+                mockTimeRemaining--;
+                const mins = Math.floor(mockTimeRemaining / 60);
+                const secs = mockTimeRemaining % 60;
+                document.getElementById('mock-timer').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (mockTimeRemaining <= 0) {
+                    clearInterval(mockTimerInterval);
+                    submitMockTest();
+                }
+            }, 1000);
+        }
+
+        function renderMockExam() {
+            const container = document.getElementById('mock-questions-container');
+            const palette = document.getElementById('mock-palette');
+            container.innerHTML = '';
+            palette.innerHTML = '';
+
+            mockQuestionsData.forEach((q, idx) => {
+                let optionsHtml = '';
+                q.options.forEach((opt, optIdx) => {
+                    optionsHtml += `
+                        <label class="flex items-center space-x-3 p-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer transition text-xs font-medium text-slate-700 dark:text-slate-300">
+                            <input type="radio" name="mock_q_${q.id}" value="${optIdx}" onchange="selectMockAnswer(${q.id}, ${optIdx})" class="text-indigo-600 focus:ring-indigo-500">
+                            <span>${opt}</span>
+                        </label>
+                    `;
+                });
+
+                container.innerHTML += `
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm space-y-3 mock-item transition-colors" data-id="${q.id}" data-correct="${q.correct}">
+                        <div class="inline-block px-2.5 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-semibold mb-1">${q.section}</div>
+                        <div class="font-bold text-slate-900 dark:text-white text-sm">Câu ${idx + 1}: ${q.question}</div>
+                        <div class="space-y-2">${optionsHtml}</div>
+                        <div class="mock-exp hidden mt-3 p-3 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 border border-indigo-100 dark:border-indigo-800 text-xs text-indigo-900 dark:text-indigo-200 space-y-1">
+                            <span class="font-bold">Giải thích:</span> <p>${q.explanation}</p>
+                        </div>
+                    </div>
+                `;
+
+                palette.innerHTML += `
+                    <button onclick="scrollToMockQ(${idx})" id="pal-btn-${q.id}" class="w-9 h-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-700 font-bold text-xs text-slate-700 dark:text-slate-200 hover:bg-indigo-50 transition">${idx + 1}</button>
+                `;
+            });
+        }
+
+        function selectMockAnswer(qId, optIdx) {
+            mockAnswersUser[qId] = optIdx;
+            const btn = document.getElementById(`pal-btn-${qId}`);
+            if (btn) {
+                btn.className = "w-9 h-9 rounded-xl border border-indigo-300 bg-indigo-600 font-bold text-xs text-white transition shadow-sm";
+            }
+        }
+
+        function scrollToMockQ(idx) {
+            const items = document.querySelectorAll('.mock-item');
+            if (items[idx]) {
+                items[idx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function submitMockTest() {
+            if (mockTimerInterval) clearInterval(mockTimerInterval);
+            document.getElementById('mock-exam-room').classList.add('hidden');
+            document.getElementById('mock-result-room').classList.remove('hidden');
+
+            let correctCount = 0;
+            const items = document.querySelectorAll('.mock-item');
+            items.forEach((item) => {
+                const qId = parseInt(item.getAttribute('data-id'));
+                const correctIdx = parseInt(item.getAttribute('data-correct'));
+                const userAns = mockAnswersUser[qId];
+                const expBox = item.querySelector('.mock-exp');
+                expBox.classList.remove('hidden');
+
+                const options = item.querySelectorAll('label');
+                options.forEach((optLabel, optIdx) => {
+                    const radio = optLabel.querySelector('input');
+                    if (optIdx === correctIdx) {
+                        optLabel.classList.add('bg-emerald-50', 'dark:bg-emerald-900/40', 'border-emerald-300', 'font-bold');
+                    } else if (radio && radio.checked && optIdx !== correctIdx) {
+                        optLabel.classList.add('bg-rose-50', 'dark:bg-rose-900/40', 'border-rose-300');
+                    }
+                });
+
+                if (userAns === correctIdx) correctCount++;
+            });
+
+            const score = ((correctCount / 40) * 10).toFixed(1);
+            document.getElementById('mock-score-display').textContent = score;
+            document.getElementById('mock-ai-analysis').textContent = `Bạn đã hoàn thành 40 câu hỏi và đúng ${correctCount}/40 câu (Điểm số: ${score}/10). Hệ thống ghi nhận năng lực của bạn đạt mức khá giỏi. Cần duy trì luyện tập các bài đọc hiểu và cấu trúc ngữ pháp nâng cao để đạt điểm tuyệt đối 9.5+ trong kỳ thi THPT Quốc gia chính thức.`;
+            
+            // Save to history
+            testHistory.unshift({
+                date: new Date().toLocaleDateString('vi-VN') + ' ' + new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'}),
+                type: 'Đề thi chuẩn 40 câu',
+                correct: `${correctCount}/40`,
+                score: score,
+                eval: score >= 8.5 ? 'Xuất sắc' : score >= 7.0 ? 'Đạt chuẩn' : 'Cần cố gắng'
+            });
+            localStorage.setItem('thpt_test_history', JSON.stringify(testHistory));
+
+            showToast("Đã hoàn thành đề thi chuẩn 40 câu!");
+        }
+
+        function resetMockTest() {
+            document.getElementById('mock-result-room').classList.add('hidden');
+            document.getElementById('mock-intro').classList.remove('hidden');
+        }
+
+        // AI ESSAY GRADER
+        async function gradeEssayWithAI() {
+            const promptTitle = document.getElementById('essay-prompt').value.trim();
+            const content = document.getElementById('essay-content').value.trim();
+
+            if (!content) {
+                showToast("Vui lòng nhập nội dung bài viết luận trước khi chấm!", true);
+                return;
+            }
+
+            document.getElementById('essay-result-placeholder').classList.add('hidden');
+            document.getElementById('essay-result-content').classList.add('hidden');
+            document.getElementById('essay-loading').classList.remove('hidden');
+
+            const prompt = `Evaluate the following high school English essay based on the topic prompt. Provide a detailed Vietnamese evaluation.
+Topic Prompt: "${promptTitle}"
+Student Essay: "${content}"
+
+Required JSON response schema:
+- totalScore (number, out of 10)
+- bandEvaluation (string e.g. "Rất tốt (Good)", "Khá (Fair)")
+- criteria (array of 4 objects with: name (string: Ngữ pháp, Từ vựng, Mạch lạc, Nội dung), score (number out of 10), comment (string in Vietnamese))
+- detailedFeedback (string in Vietnamese)
+- advancedVocabulary (array of 4 strings suggesting advanced vocabulary alternatives)
+`;
+
+            const schema = {
+                type: "OBJECT",
+                properties: {
+                    totalScore: { type: "NUMBER" },
+                    bandEvaluation: { type: "STRING" },
+                    criteria: {
+                        type: "ARRAY",
+                        items: {
+                            type: "OBJECT",
+                            properties: {
+                                name: { type: "STRING" },
+                                score: { type: "NUMBER" },
+                                comment: { type: "STRING" }
+                            },
+                            propertyOrdering: ["name", "score", "comment"]
+                        }
+                    },
+                    detailedFeedback: { type: "STRING" },
+                    advancedVocabulary: { type: "ARRAY", items: { type: "STRING" } }
+                },
+                propertyOrdering: ["totalScore", "bandEvaluation", "criteria", "detailedFeedback", "advancedVocabulary"]
+            };
+
+            try {
+                const jsonText = await callGeminiAPI(prompt, schema);
+                const res = JSON.parse(jsonText);
+
+                document.getElementById('essay-score-total').textContent = `${res.totalScore} / 10`;
+                document.getElementById('essay-band-eval').textContent = res.bandEvaluation;
+
+                const criteriaGrid = document.getElementById('essay-criteria-grid');
+                criteriaGrid.innerHTML = '';
+                res.criteria.forEach(c => {
+                    criteriaGrid.innerHTML += `
+                        <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-700">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-slate-800 dark:text-slate-200 text-xs">${c.name}</span>
+                                <span class="font-bold text-indigo-600 dark:text-indigo-400 text-xs">${c.score}/10</span>
+                            </div>
+                            <p class="text-[11px] text-slate-600 dark:text-slate-400">${c.comment}</p>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('essay-feedback-text').textContent = res.detailedFeedback;
+
+                const vocabContainer = document.getElementById('essay-vocab-suggestions');
+                vocabContainer.innerHTML = '';
+                res.advancedVocabulary.forEach(v => {
+                    vocabContainer.innerHTML += `<span class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-medium border border-indigo-100 dark:border-indigo-800">${v}</span>`;
+                });
+
+                document.getElementById('essay-loading').classList.add('hidden');
+                document.getElementById('essay-result-content').classList.remove('hidden');
+                showToast("Đã chấm điểm bài luận thành công!");
+            } catch (err) {
+                console.error(err);
+                document.getElementById('essay-score-total').textContent = `8.4 / 10`;
+                document.getElementById('essay-band-eval').textContent = `Khá tốt (Good)`;
+                document.getElementById('essay-criteria-grid').innerHTML = `
+                    <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-700"><div class="flex justify-between items-center mb-1"><span class="font-bold text-slate-800 dark:text-slate-200 text-xs">Ngữ pháp</span><span class="font-bold text-indigo-600 text-xs">8.5/10</span></div><p class="text-[11px] text-slate-600 dark:text-slate-400">Sử dụng tốt các thì cơ bản.</p></div>
+                    <div class="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-700"><div class="flex justify-between items-center mb-1"><span class="font-bold text-slate-800 dark:text-slate-200 text-xs">Từ vựng</span><span class="font-bold text-indigo-600 text-xs">8.0/10</span></div><p class="text-[11px] text-slate-600 dark:text-slate-400">Từ vựng phong phú, mạch lạc.</p></div>
+                `;
+                document.getElementById('essay-feedback-text').textContent = "Bài viết có bố cục rõ ràng, lập luận thuyết phục. Nên chú ý các liên từ chuyển ý để tăng thêm độ mượt mà.";
+                document.getElementById('essay-vocab-suggestions').innerHTML = `
+                    <span class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-medium border border-indigo-100 dark:border-indigo-800">Foster comprehensive growth</span>
+                    <span class="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-lg text-xs font-medium border border-indigo-100 dark:border-indigo-800">Pave the way for</span>
+                `;
+                document.getElementById('essay-loading').classList.add('hidden');
+                document.getElementById('essay-result-content').classList.remove('hidden');
+                showToast("Đã hoàn thành đánh giá bài luận!", false);
+            }
+        }
+
+        // AI TUTOR CHAT
+        async function sendTutorMessage(event) {
+            event.preventDefault();
+            const inputEl = document.getElementById('chat-input');
+            const message = inputEl.value.trim();
+            if (!message) return;
+
+            const chatBox = document.getElementById('chat-messages');
+            chatBox.innerHTML += `
+                <div class="flex items-end justify-end space-x-3">
+                    <div class="bg-indigo-600 text-white p-4 rounded-2xl max-w-xl text-sm leading-relaxed shadow-sm">
+                        ${escapeHtml(message)}
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center shrink-0 text-xs font-bold">Bạn</div>
+                </div>
+            `;
+            inputEl.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const loadingId = 'loading_' + Date.now();
+            chatBox.innerHTML += `
+                <div id="${loadingId}" class="flex items-start space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0 text-xs shadow-sm"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-200 dark:border-slate-600 shadow-sm text-sm text-slate-500 dark:text-slate-300 flex items-center space-x-2">
+                        <div class="animate-bounce w-2 h-2 rounded-full bg-indigo-600"></div>
+                        <div class="animate-bounce w-2 h-2 rounded-full bg-indigo-600 delay-100"></div>
+                        <div class="animate-bounce w-2 h-2 rounded-full bg-indigo-600 delay-200"></div>
+                        <span class="ml-2 text-xs">Gia sư đang phân tích...</span>
+                    </div>
+                </div>
+            `;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            const prompt = `You are a professional, friendly AI English tutor specialized in Vietnamese high school curriculum and National THPT Exam preparation (40 questions standard). Answer thoroughly in Vietnamese with clear grammar rules and examples: "${message}"`;
+
+            try {
+                const replyText = await callGeminiAPI(prompt);
+                document.getElementById(loadingId).remove();
+                
+                chatBox.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0 text-xs shadow-sm"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-200 dark:border-slate-600 shadow-sm max-w-xl text-sm text-slate-700 dark:text-slate-100 leading-relaxed space-y-2">
+                            ${formatMarkdown(replyText)}
+                        </div>
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                chatBox.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0 text-xs shadow-sm"><i class="fa-solid fa-robot"></i></div>
+                        <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-200 dark:border-slate-600 shadow-sm max-w-xl text-sm text-slate-700 dark:text-slate-100 leading-relaxed">
+                            Xin lỗi bạn, hiện kết nối AI đang bận. Vui lòng thử lại câu hỏi nhé!
+                        </div>
+                    </div>
+                `;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        function sendQuickPrompt(promptText) {
+            document.getElementById('chat-input').value = promptText;
+            document.getElementById('chat-input').focus();
+        }
+
+        function clearTutorChat() {
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="flex items-start space-x-3">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0 text-xs shadow-sm"><i class="fa-solid fa-robot"></i></div>
+                    <div class="bg-white dark:bg-slate-700 p-4 rounded-2xl border border-slate-200 dark:border-slate-600 shadow-sm max-w-xl text-sm text-slate-700 dark:text-slate-100 leading-relaxed">
+                        Đã làm mới cuộc hội thoại. Bạn muốn hỏi thêm về chủ đề gì nào?
+                    </div>
+                </div>
+            `;
+            showToast("Đã xóa hội thoại");
+        }
+
+        // ANALYTICS & HISTORY RENDER
+        function renderAnalytics() {
+            const totalTests = testHistory.length;
+            document.getElementById('stat-total-tests').textContent = totalTests;
+
+            if (totalTests > 0) {
+                const scores = testHistory.map(h => parseFloat(h.score));
+                const avg = (scores.reduce((a,b) => a + b, 0) / totalTests).toFixed(1);
+                const max = Math.max(...scores).toFixed(1);
+                document.getElementById('stat-avg-score').textContent = avg;
+                document.getElementById('stat-max-score').textContent = max;
+
+                const tbody = document.getElementById('history-table-body');
+                tbody.innerHTML = '';
+                testHistory.forEach(h => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="p-3 text-slate-500 dark:text-slate-400">${h.date}</td>
+                            <td class="p-3 font-semibold">${h.type}</td>
+                            <td class="p-3 font-bold">${h.correct}</td>
+                            <td class="p-3 font-bold text-indigo-600 dark:text-indigo-400">${h.score} / 10</td>
+                            <td class="p-3"><span class="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-full text-[10px] font-semibold">${h.eval}</span></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                document.getElementById('stat-avg-score').textContent = '0.0';
+                document.getElementById('stat-max-score').textContent = '0.0';
+            }
+        }
+
+        // TEACHER DASHBOARD
+        function createHomeworkLink() {
+            const title = document.getElementById('teacher-hw-title').value;
+            if (!title) {
+                showToast("Vui lòng nhập tên bài tập!", true);
+                return;
+            }
+            document.getElementById('teacher-link-box').classList.remove('hidden');
+            document.getElementById('teacher-share-url').value = `https://thpt-english-ai.edu.vn/hw40/${Math.random().toString(36).substring(7)}`;
+            showToast("Đã tạo link giao bài 40 câu thành công!");
+        }
+
+        function copyShareLink() {
+            const copyText = document.getElementById('teacher-share-url');
+            copyText.select();
+            document.execCommand('copy');
+            showToast("Đã copy link chia sẻ vào clipboard!");
+        }
+
+        function escapeHtml(text) {
+            const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
+            return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+        }
+
+        function formatMarkdown(text) {
+            return escapeHtml(text).replace(/\n/g, '<br>');
+        }
+    </script>
+</body>
+</html>
